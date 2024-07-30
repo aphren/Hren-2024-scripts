@@ -1,0 +1,74 @@
+## Using vsearch for paired read merging, not bbmap. simplifies things
+## Ran a test with just the 37W samples.
+
+
+1. Merge paired reads with vsearch in Ubuntu
+	cd /mnt/c/programming/7002_full
+	bash merge_reads.sh
+2. Global alignment to library. Copied database.fastas from lib_sample programming folder
+	Convert to fastas:
+		vsearch --fastq_filter 37W1_merged.fastq --fastaout 37W1.fasta
+		vsearch --fastq_filter 37W2_merged.fastq --fastaout 37W2.fasta
+	Global alignment:
+		vsearch --usearch_global 37W1.fasta --db database.fasta --id 1.0 --uc 37W1_aligned.tsv
+		vsearch --usearch_global 37W2.fasta --db database.fasta --id 1.0 --uc 37W2_aligned.tsv
+
+3. Convert tsvs to counts using python script "databaser_and_counter.py"
+
+4. Use RStudio to use DESeq2
+	Create a coldata csv, with columns ['replicate','condition']
+	Create a counts matrix, with columns ['gRNA',replicate1,replicate2,etc]
+		gRNA is the gRNA ID for a specific spacer sequence
+		the replicates are the name of each replicate (e.g. 37W1 or dCasLib1)
+	
+	Install DESeq2
+		if (!require("BiocManager", quietly = TRUE))
+    		install.packages("BiocManager")
+
+		BiocManager::install("DESeq2")
+
+	Install apeglm
+		if (!require("BiocManager", quietly = TRUE))
+    		install.packages("BiocManager")
+
+		BiocManager::install("apeglm")
+
+	R commands:
+		library(DESeq2)
+		cts <- as.matrix(read.csv('cts_37w.csv',sep=",",row.names="ID"))
+		coldata <- read.csv('coldata.csv')
+		dds <- DESeqDataSetFromMatrix(countData=cts,colData=coldata,design= ~ condition)
+		dds <- DESeq(dds)
+
+		res <- results(dds,name='condition_library_vs_37W')
+		OR:
+		res <- results(dds, contrast=c('condition','22B','library'))
+
+		res <- lfcShrink(dds,coef='condition_library_vs_37W',type='apeglm')
+		write.csv(as.data.frame(res), file="condition_library_vs_37W.csv")
+
+	# Need to figure out how to flip the fold change values. They're all inverted.
+
+
+Setting up for CRISPhierMix:
+	Install devtools:
+		install.packages('devtools')
+	Install the package:
+		devtools::install_github("timydaley/CRISPhieRmix")
+	Follow the manual's commands exactly, just swap a couple names
+		
+		> library(CRISPhieRmix)
+		> data= read.table(file = "condition_library_vs_37di.csv", sep = ",",
+		header = TRUE)
+		> geneTargetingGuides = which(data$gene != 'nt-gRNA')
+		> negCtrlGuides = which(data$gene == 'nt-gRNA')
+		> geneIds = data$gene[geneTargetingGuides]
+		> gamma = data$LFC
+		> gamma = data$LFC[geneTargetingGuides]
+		> negCtrl = data$LFC[negCtrlGuides]
+		> geneIds = factor(geneIds, levels = unique(geneIds))
+		> log2fcCRISPhieRmixFit = CRISPhieRmix(gamma, geneIds = geneIds, negCtrl = negCtrl, 		mu = -2, nMesh = 100, PLOT = TRUE, VERBOSE = TRUE)
+		> log2fcCRISPhieRmixScores = data.frame(gene = log2fcCRISPhieRmixFit$genes, locfdr 		= log2fcCRISPhieRmixFit$locfdr, score = log2fcCRISPhieRmixFit$genePosterior)
+		> write.csv(log2fcCRISPhieRmixScores, file="crisphiermix_37w_output.csv")
+	
+
