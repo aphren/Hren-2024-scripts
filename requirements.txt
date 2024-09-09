@@ -1,6 +1,6 @@
 streamlit
 pandas
 altair
-sklearn
+scikit-learn
 re
 
