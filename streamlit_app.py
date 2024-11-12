@@ -326,7 +326,7 @@ if gene_list:
         .encode(x="x:Q")
     )
 
-    linear_regressions = st.sidebar.checkbox("Add linear regressions")
+    linear_regressions = st.sidebar.checkbox("Add linear regressions test")
 
     if linear_regressions:
         chart = regression_lines + base_chart + zero_line_y + zero_line_x
