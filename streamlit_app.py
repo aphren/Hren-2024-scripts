@@ -17,6 +17,8 @@ def load_data(data_url):
     df.index = df["ID"]
     return df
 
+def moving_average(x, w):
+    return np.convolve(x, np.ones(w), 'valid') / w
 
 data_url = "https://github.com/aphren/Hren-2024-scripts/raw/main/library_data_with_loci.csv"
 data = load_data(data_url)
@@ -263,11 +265,13 @@ if gene_list:
 
         # fit linear regression to each displayed gene
         try:
-            model = LinearRegression()
+            #model = LinearRegression()
             X = temp_chart_data[["37W_LFC"]].values.reshape(-1, 1)
             y = temp_chart_data[condition_column].values
-            model.fit(X, y)
-            temp_chart_data["regression_y"] = model.predict(X)
+            temp_chart_data["regression_y"] = moving_average(y,2)
+            
+            #model.fit(X, y)
+            #temp_chart_data["regression_y"] = model.predict(X)
         except:
             pass
         chart_data = pd.concat([chart_data, temp_chart_data])
