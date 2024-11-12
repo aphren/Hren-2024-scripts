@@ -18,7 +18,7 @@ def load_data(data_url):
     return df
 
 
-data_url = "https://github.com/aphren/Hren-2024-scripts/raw/main/library_data.csv"
+data_url = "https://github.com/aphren/Hren-2024-scripts/raw/main/library_data_with_loci.csv"
 data = load_data(data_url)
 
 ## extract a dictionary to retrieve gene descriptions
