@@ -266,6 +266,7 @@ if gene_list:
 
             window_size = 2
             temp_chart_data["regression_y"] = temp_chart_data['condition_column'].rolling(window=window_size).mean()
+            print(temp_chart_data["regression_y"])
             #model = LinearRegression()
             #X = temp_chart_data[["37W_LFC"]].values.reshape(-1, 1)
             #y = temp_chart_data[condition_column].values
@@ -326,7 +327,7 @@ if gene_list:
         .encode(x="x:Q")
     )
 
-    linear_regressions = st.sidebar.checkbox("Add linear regressions test")
+    linear_regressions = st.sidebar.checkbox("Add linear regressions")
 
     if linear_regressions:
         chart = regression_lines + base_chart + zero_line_y + zero_line_x
