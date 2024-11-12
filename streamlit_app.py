@@ -5,6 +5,7 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 import re
+import numpy as np
 from sklearn.linear_model import LinearRegression
 
 
