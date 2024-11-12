@@ -263,17 +263,11 @@ if gene_list:
 
         # fit linear regression to each displayed gene
         try:
-
-            window_size = 2
-            temp_chart_data["regression_y"] = temp_chart_data['condition_column'].rolling(window=window_size).mean()
-            print(temp_chart_data["regression_y"])
-            #model = LinearRegression()
-            #X = temp_chart_data[["37W_LFC"]].values.reshape(-1, 1)
-            #y = temp_chart_data[condition_column].values
-            #temp_chart_data["regression_y"] = moving_average(y,2)
-            
-            #model.fit(X, y)
-            #temp_chart_data["regression_y"] = model.predict(X)
+            model = LinearRegression()
+            X = temp_chart_data[["37W_LFC"]].values.reshape(-1, 1)
+            y = temp_chart_data[condition_column].values
+            model.fit(X, y)
+            temp_chart_data["regression_y"] = model.predict(X)
         except:
             pass
         chart_data = pd.concat([chart_data, temp_chart_data])
