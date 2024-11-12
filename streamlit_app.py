@@ -5,7 +5,6 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 import re
-import numpy as np
 from sklearn.linear_model import LinearRegression
 
 
@@ -18,8 +17,6 @@ def load_data(data_url):
     df.index = df["ID"]
     return df
 
-def moving_average(x, w):
-    return np.convolve(x, np.ones(w), 'valid') / w
 
 data_url = "https://github.com/aphren/Hren-2024-scripts/raw/main/library_data_with_loci.csv"
 data = load_data(data_url)
@@ -266,10 +263,13 @@ if gene_list:
 
         # fit linear regression to each displayed gene
         try:
+
+            window_size = 2
+            temp_chart_data["regression_y"] = temp_chart_data['condition_column'].rolling(window=window_size).mean()
             #model = LinearRegression()
-            X = temp_chart_data[["37W_LFC"]].values.reshape(-1, 1)
-            y = temp_chart_data[condition_column].values
-            temp_chart_data["regression_y"] = moving_average(y,2)
+            #X = temp_chart_data[["37W_LFC"]].values.reshape(-1, 1)
+            #y = temp_chart_data[condition_column].values
+            #temp_chart_data["regression_y"] = moving_average(y,2)
             
             #model.fit(X, y)
             #temp_chart_data["regression_y"] = model.predict(X)
