@@ -31,7 +31,7 @@ gene_description_dict = pd.Series(
 
 st.sidebar.markdown(
     """<center>
-    <h2>Welcome to our CRISPRi data visualization tool! <br> <a href="https://www.biorxiv.org/content/10.1101/2024.05.20.595006v1">Hren et al. 2024</a> <h2>
+    <h2>Welcome to our CRISPRi data visualization tool! <br> <a href="https://www.pnas.org/doi/10.1073/pnas.2412625122">Hren et al. 2025</a> <h2>
     Enter individual genes on the main page, or observe the behavior of select protein groups
     <br>
 """,
